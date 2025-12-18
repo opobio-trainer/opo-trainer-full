@@ -2357,28 +2357,24 @@ if (formSugerencias) {
       origen: 'FULL'
     };
 
-    try {
-      const res = await fetch(WEBHOOK_URL, {
+    // Enviamos a Make (sin CORS) usando el payload correcto
+fetch(WEBHOOK_URL, {
   method: "POST",
   mode: "no-cors",
   headers: { "Content-Type": "text/plain;charset=UTF-8" },
   body: JSON.stringify({
-    tipo: "sugerencia",
-    texto: (texto || "").trim(),
+    ...payload,
     url: location.href,
     when: new Date().toISOString()
   })
+}).catch((err) => {
+  console.error("Error enviando sugerencia FULL:", err);
 });
 
-      console.log('Respuesta webhook FULL:', res.status);
-      alert('✅ ¡Gracias! Tu sugerencia se ha enviado correctamente.');
-      formSugerencias.reset();
-    } catch (err) {
-      console.error('Error enviando sugerencia FULL:', err);
-      alert('❌ Ha habido un problema técnico al enviar la sugerencia. Inténtalo de nuevo más tarde.');
-    }
-  });
-}
+// En no-cors NO podemos comprobar respuesta, así que damos OK al usuario
+alert("✅ ¡Gracias! Tu sugerencia se ha enviado.");
+formSugerencias.reset();
+
 
 // === Cargar automáticamente el JSON del catálogo embebido en el HTML ===
 function cargarDemoPorDefecto() {

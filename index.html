@@ -2359,10 +2359,16 @@ if (formSugerencias) {
 
     try {
       const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+  method: "POST",
+  mode: "no-cors",
+  headers: { "Content-Type": "text/plain;charset=UTF-8" },
+  body: JSON.stringify({
+    tipo: "sugerencia",
+    texto: (texto || "").trim(),
+    url: location.href,
+    when: new Date().toISOString()
+  })
+});
 
       console.log('Respuesta webhook FULL:', res.status);
       alert('✅ ¡Gracias! Tu sugerencia se ha enviado correctamente.');

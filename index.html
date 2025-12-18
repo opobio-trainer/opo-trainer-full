@@ -2320,60 +2320,41 @@ chipsSimulacro.forEach(chip => {
       }
     }
 // --- Formulario de sugerencias (FULL → Make) ---
-const WEBHOOK_URL = "https://hook.eu2.make.com/vo6arhz02wv50gqvpxhoingqxuwv3lxv";
+const WEBHOOK_URL = "https://hook.eu2.make.com/vo6arhz02wv50gqvpxhoingqxuwv3lxv"; // <-- tu webhook FULL
 
 if (formSugerencias) {
-  formSugerencias.addEventListener('submit', async (e) => {
+  formSugerencias.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const nombre  = formSugerencias.elements['sug-nombre'].value.trim();
-    const email   = formSugerencias.elements['sug-email'].value.trim();
-    const mensaje = formSugerencias.elements['sug-mensaje'].value.trim();
+    const nombre  = formSugerencias.elements["sug-nombre"].value.trim();
+    const email   = formSugerencias.elements["sug-email"].value.trim();
+    const mensaje = formSugerencias.elements["sug-mensaje"].value.trim();
 
-    if (!nombre) {
-      alert('Por favor, indica tu nombre.');
-      return;
-    }
+    if (!nombre) return alert("Por favor, indica tu nombre.");
+    if (!email)  return alert("Por favor, indica tu email.");
+    if (!email.includes("@") || !email.includes(".")) return alert("Por favor, introduce un email válido.");
+    if (!mensaje) return alert("Por favor, escribe tu sugerencia.");
 
-    if (!email) {
-      alert('Por favor, indica tu email.');
-      return;
-    }
-
-    if (!email.includes('@') || !email.includes('.')) {
-      alert('Por favor, introduce un email válido.');
-      return;
-    }
-
-    if (!mensaje) {
-      alert('Por favor, escribe tu sugerencia.');
-      return;
-    }
-
-    const payload = {
+    const data = new URLSearchParams({
       nombre,
       email,
       mensaje,
-      origen: 'FULL'
-    };
+      origen: "FULL",
+      url: location.href,
+      when: new Date().toISOString()
+    });
 
-    // Enviamos a Make (sin CORS) usando el payload correcto
-fetch(WEBHOOK_URL, {
-  method: "POST",
-  mode: "no-cors",
-  headers: { "Content-Type": "text/plain;charset=UTF-8" },
-  body: JSON.stringify({
-    ...payload,
-    url: location.href,
-    when: new Date().toISOString()
-  })
-}).catch((err) => {
-  console.error("Error enviando sugerencia FULL:", err);
-});
+    fetch(WEBHOOK_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body: data.toString()
+    });
 
-// En no-cors NO podemos comprobar respuesta, así que damos OK al usuario
-alert("✅ ¡Gracias! Tu sugerencia se ha enviado.");
-formSugerencias.reset();
+    alert("✅ ¡Gracias! Tu sugerencia se ha enviado.");
+    formSugerencias.reset();
+  });
+}
 
 
 // === Cargar automáticamente el JSON del catálogo embebido en el HTML ===
